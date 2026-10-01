@@ -20,7 +20,7 @@ on:
       DEVICE_TREE:
         description: 'OrangeFox Device Tree URL'
         required: true
-        default: 'https://github.com/aditya-dumps/android_device_lava_LXX516.git'
+        default: 'https://github.com/aditya-dumps/device_lava_LXX516_recovery.git'
         type: string
       DEVICE_TREE_BRANCH:
         description: 'OrangeFox Device Tree Branch'
