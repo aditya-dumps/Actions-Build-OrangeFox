@@ -82,22 +82,32 @@ jobs:
         sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /usr/local/share/boost /opt/hostedtoolcache
         df -h
 
-    - name: Set up 16GB zRAM with Max Compression
+    - name: Set up 16GB Memory (zRAM / Fast Swap)
       run: |
         sudo swapoff -a || true
-        sudo modprobe zram num_devices=1
-        if grep -q zstd /sys/block/zram0/comp_algorithm 2>/dev/null; then
-          echo zstd | sudo tee /sys/block/zram0/comp_algorithm
+        # Attempt to install extra kernel modules containing zram for Azure runner
+        sudo apt-get update && sudo apt-get install -y linux-modules-extra-$(uname -r) || true
+        
+        if sudo modprobe zram num_devices=1 2>/dev/null; then
+          echo "zRAM module loaded successfully!"
+          if grep -q zstd /sys/block/zram0/comp_algorithm 2>/dev/null; then
+            echo zstd | sudo tee /sys/block/zram0/comp_algorithm
+          fi
+          echo 16G | sudo tee /sys/block/zram0/disksize
+          sudo mkswap -L zram0 /dev/zram0
+          sudo swapon -p 100 /dev/zram0
+          sudo sysctl -w vm.swappiness=180
+          echo "16GB zRAM active with max compression!"
+        else
+          echo "zRAM module unavailable in this cloud kernel; creating 16GB fast swap fallback..."
+          sudo fallocate -l 16G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          echo "16GB swap active!"
         fi
-        echo 16G | sudo tee /sys/block/zram0/disksize
-        sudo mkswap -L zram0 /dev/zram0
-        sudo swapon -p 100 /dev/zram0
-        sudo sysctl -w vm.swappiness=180
-        sudo sysctl -w vm.watermark_boost_factor=0
-        sudo sysctl -w vm.watermark_scale_factor=125
-        sudo sysctl -w vm.page-cluster=0
-        zramctl || swapon --show
         free -h
+
 
 
     - name: Build Environment
