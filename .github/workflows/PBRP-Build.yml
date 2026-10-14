@@ -20,16 +20,16 @@ on:
       DEVICE_TREE:
         description: 'Beryl device-tree repository'
         required: true
-        default: 'https://github.com/IQ-HARRY7/device_xiaomi_beryl_recovery.git'
+        default: 'https://github.com/aditya-dumps/device_xiaomi_beryl_recovery.git'
         type: string
       DEVICE_TREE_BRANCH:
         description: 'Device Tree Branch'
         required: true
-        default: 'fox_14.1'
+        default: 'PBRP'
         type: choice
         options:
-        - fox_14.1
         - PBRP
+        - fox_14.1
         - PBRP-TEST
         - master
         - main
