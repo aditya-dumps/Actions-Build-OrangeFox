@@ -101,6 +101,12 @@ jobs:
           mkdir -p "$HOME/bin"
           curl -fsSL https://storage.googleapis.com/git-repo-downloads/repo -o "$HOME/bin/repo"
           chmod a+x "$HOME/bin/repo"
+
+          # Install magiskboot for custom vendor_boot repacking
+          curl -fsSL https://github.com/topjohnwu/Magisk/releases/download/v28.1/Magisk-v28.1.apk -o /tmp/magisk.apk
+          unzip -p /tmp/magisk.apk lib/x86_64/libmagiskboot.so > "$HOME/bin/magiskboot"
+          chmod a+x "$HOME/bin/magiskboot"
+
           echo "$HOME/bin" >> "$GITHUB_PATH"
           echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> "$GITHUB_ENV"
           echo "/usr/lib/jvm/java-11-openjdk-amd64/bin" >> "$GITHUB_PATH"
